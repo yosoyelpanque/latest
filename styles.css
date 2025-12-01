@@ -1085,67 +1085,69 @@ body {
         margin-bottom: 0;
         overflow: hidden; /* Cortar cualquier desbordamiento fantasma */
     }
-    @media print {
-        body, html {
-            height: auto;
-            background: none;
-        }
-        /* Ocultar encabezados/pies de página del navegador si es posible */
-        @page {
-            margin: 0.5in; /* Margen seguro */
-        }
+@media print {
+    html, body {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow: visible !important; /* CRÍTICO: Permite que el contenido fluya a varias hojas */
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
     }
+
+    body > * {
+        display: none !important;
+    }
+
     #print-view-container {
         display: block !important;
-        position: static;
-        width: 100%;
-        height: auto;
-        margin: 0;
-        padding: 0;
+        position: absolute !important; /* Lo sacamos del flujo normal para ponerlo al principio */
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        z-index: 9999 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
+
     .print-page {
-        display: none;
-        visibility: hidden;
-        page-break-before: auto !important;
-        page-break-after: auto !important;
+        display: none; /* Por defecto oculto */
     }
+
     .print-page.active {
-        display: block;
-        visibility: visible;
-        width: 100%;
-        height: auto;
-        position: static;
+        display: block !important;
+        position: relative !important; /* Flujo natural */
+        width: 100% !important;
+        height: auto !important; /* Deja que crezca lo que necesite */
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 40px !important; /* Margen interno para que no se pegue al borde del papel */
+        box-sizing: border-box !important;
+        
+        page-break-inside: auto !important; 
+    }
+
+    .print-page.batch-clone {
+        display: block !important;
+        page-break-after: always !important; /* Estándar antiguo */
+        break-after: page !important;       /* Estándar moderno */
+        margin-bottom: 0 !important;
+        border-bottom: none !important;
+    }
+
+    .print-page.batch-clone:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+    }
+
+    tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
     
-    @page {
-        size: letter; 
-        margin: 0.5in; 
-
-        @bottom-right {
-            content: "Página " counter(page) " de " counter(pages);
-            font-family: Arial, sans-serif;
-            font-size: 8pt; 
-            color: #888;   
-            margin-bottom: 5px; 
-            margin-right: 5px;
-        }
-    }
-
-    @page batch_clean {
-        size: letter;
-        margin: 0.5in;
-        @bottom-right {
-            content: none; /* Oculta el "1 de 8" */
-        }
-    }
-
-    /* Forzamos a los clones masivos a usar esta página limpia */
-    .print-page.batch-mode {
-        page: batch_clean;
-        page-break-after: always; /* Asegura el corte */
-    }
-
-    .layout-delete-btn, .layout-rotate-handle {
+    .layout-delete-btn, .layout-rotate-handle, .modal-overlay, #app-container, #loading-overlay {
         display: none !important;
     }
 }
@@ -1243,4 +1245,5 @@ body {
 .dark-mode .inventory-editable-cell:focus {
     background-color: #0f172a;
     border-color: #818cf8;
+
 }
